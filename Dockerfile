@@ -16,5 +16,5 @@ RUN npm run build
 CMD ["npm", "start"]
 
 # 컨테이너가 실행될 포트
-EXPOSE 3010
+EXPOSE 3000
 #

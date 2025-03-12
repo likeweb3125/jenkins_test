@@ -6,7 +6,7 @@ pipeline {
         APP_DIR = '/home/test_jenkins_react/jenkins_test'
         CONTAINER_NAME = 'jenkins_test'
         IMAGE_NAME = 'jenkins_test_image'
-        PORT = '3010'
+        PORT = '3000'
     }
 
     stages {
@@ -38,7 +38,7 @@ pipeline {
                     sh """
                     docker stop ${CONTAINER_NAME} || true
                     docker rm ${CONTAINER_NAME} || true
-                    docker run -d --name ${CONTAINER_NAME} -p ${PORT}:3010 ${IMAGE_NAME}
+                    docker run -d --name ${CONTAINER_NAME} -p ${PORT}:3000 ${IMAGE_NAME}
                     """
                 }
             }
