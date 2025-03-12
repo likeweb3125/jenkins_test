@@ -11,31 +11,29 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
-            steps {
-                script {
-                    sh "rm -rf ${APP_DIR}"
-                    sh "git clone ${GIT_REPO} ${APP_DIR}"
-                }
-            }
-        }
-
-        stage('Build Docker Image') {
+        stage('Update Repository') {
             steps {
                 script {
                     sh """
-                    cd ${APP_DIR}
-                    docker build -t ${IMAGE_NAME} .
+                    if [ ! -d "${APP_DIR}/.git" ]; then
+                        git clone ${GIT_REPO} ${APP_DIR}
+                    else
+                        cd ${APP_DIR}
+                        git fetch origin main
+                        git reset --hard origin/main
+                        git pull origin main
+                    fi
                     """
                 }
             }
         }
 
-        stage('Run Docker Container') {
+        stage('Build & Restart Docker Container') {
             steps {
                 script {
-                    // 기존 컨테이너 종료 및 삭제
                     sh """
+                    cd ${APP_DIR}
+                    docker build --no-cache -t ${IMAGE_NAME} .
                     docker stop ${CONTAINER_NAME} || true
                     docker rm ${CONTAINER_NAME} || true
                     docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}
