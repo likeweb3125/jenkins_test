@@ -75,7 +75,7 @@ def sendMailOnFailure(errorMessage) {
         <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
         """,
         recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-        to: 'crazin@likeweb.co.kr'
+        to: 'crazin@likeweb.co.kr, ohsjwe@likeweb.co.kr'
     )
 }
 
@@ -91,6 +91,6 @@ def sendMailOnSuccess() {
         <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
         """,
         recipientProviders: [[$class: 'DevelopersRecipientProvider']],
-        to: 'crazin@likeweb.co.kr'
+        to: 'crazin@likeweb.co.kr, ohsjwe@likeweb.co.kr'
     )
 }
