@@ -91,4 +91,5 @@ def sendMailOnSuccess() {
         <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
         """,
        to: env.RECIPIENTS
+    )
 }
