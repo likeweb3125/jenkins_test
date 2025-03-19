@@ -79,13 +79,15 @@ def sendMailOnFailure(errorMessage) {
                 to: "crazin@likeweb.co.kr",
                 mimeType: "text/html",
                 replyTo: "jenkins@mg.likeweb.co.kr",
-                from: "jenkins@mg.likeweb.co.kr"
+                from: "jenkins@mg.likeweb.co.kr",
+                username: "${env.SMTP_USER}",
+                password: "${SMTP_PASSWORD}"
     )
 }
 
 // 📌 빌드 성공 시 이메일 전송 함수a
 def sendMailOnSuccess() {
-    withCredentials([string(credentialsId: 'mailgun', variable: 'SMTP_PASSWORD')]) {
+    withCredentials([string(credentialsId: 'mailgun_smtp_password', variable: 'SMTP_PASSWORD')]) {
     emailext(
                 subject: "✅ Jenkins Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
