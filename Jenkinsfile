@@ -6,10 +6,9 @@ pipeline {
         APP_DIR = '/home/test_jenkins_react/jenkins_test'
         CONTAINER_NAME = 'jenkins_test'
         IMAGE_NAME = 'jenkins_test_image'
-        HOST_PORT = '3010'  // 변경된 호스트 포트
-        CONTAINER_PORT = '3000'  // 컨테이너 내부 포트
-        RECIPIENTS = 'crazin@likeweb.co.kr'  // ✅ 추가
-        SMTP_USER = 'jenkins@mg.likeweb.co.kr'
+        HOST_PORT = '3010'
+        CONTAINER_PORT = '3000'
+        RECIPIENTS = 'crazin@likeweb.co.kr'
     }
 
     stages {
@@ -65,43 +64,47 @@ pipeline {
     }
 }
 
-// 📌 빌드 실패 시 이메일 전송 함수1
+// 📌 빌드 실패 시 이메일 전송 함수
 def sendMailOnFailure(errorMessage) {
-    emailext (
-        subject: "🔴 Jenkins Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-        body: """
-        <h2>❌ Jenkins 빌드 실패 ❌</h2>
-        <p>🔹 프로젝트: ${env.JOB_NAME}</p>
-        <p>🔹 빌드 번호: ${env.BUILD_NUMBER}</p>
-        <p>🔹 실패 단계: ${errorMessage}</p>
-        <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
-        """,
-                to: "crazin@likeweb.co.kr",
-                mimeType: "text/html",
-                replyTo: "jenkins@mg.likeweb.co.kr",
-                from: "jenkins@mg.likeweb.co.kr",
-                username: "${env.SMTP_USER}",
-                password: "${SMTP_PASSWORD}"
-    )
+    withCredentials([usernamePassword(credentialsId: 'mailgun_smtp', usernameVariable: 'SMTP_USER', passwordVariable: 'SMTP_PASSWORD')]) {
+        echo "SMTP_USER: ${env.SMTP_USER}"  // ✅ ID가 정상적으로 로드되는지 확인
+        emailext (
+            subject: "🔴 Jenkins Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: """
+            <h2>❌ Jenkins 빌드 실패 ❌</h2>
+            <p>🔹 프로젝트: ${env.JOB_NAME}</p>
+            <p>🔹 빌드 번호: ${env.BUILD_NUMBER}</p>
+            <p>🔹 실패 단계: ${errorMessage}</p>
+            <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
+            """,
+            to: "${env.RECIPIENTS}",
+            mimeType: "text/html",
+            replyTo: "${env.SMTP_USER}",
+            from: "${env.SMTP_USER}",
+            username: "${env.SMTP_USER}",  // ✅ 올바르게 불러오기
+            password: "${env.SMTP_PASSWORD}"  // ✅ 올바르게 불러오기
+        )
+    }
 }
 
-// 📌 빌드 성공 시 이메일 전송 함수a
+// 📌 빌드 성공 시 이메일 전송 함수
 def sendMailOnSuccess() {
-    withCredentials([string(credentialsId: 'mailgun_smtp_password', variable: 'SMTP_PASSWORD')]) {
-    emailext(
-                subject: "✅ Jenkins Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-                body: """
-                <h2>🎉 Jenkins 빌드 성공 🎉</h2>
-                <p>🔹 프로젝트: ${env.JOB_NAME}</p>
-                <p>🔹 빌드 번호: ${env.BUILD_NUMBER}</p>
-                <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
-                """,
-                to: "crazin@likeweb.co.kr",
-                mimeType: "text/html",
-                replyTo: "jenkins@mg.likeweb.co.kr",
-                from: "jenkins@mg.likeweb.co.kr",
-                username: "${env.SMTP_USER}",
-                password: "${SMTP_PASSWORD}"
-            )
+    withCredentials([usernamePassword(credentialsId: 'mailgun_smtp', usernameVariable: 'SMTP_USER', passwordVariable: 'SMTP_PASSWORD')]) {
+        echo "SMTP_USER: ${env.SMTP_USER}"
+        emailext(
+            subject: "✅ Jenkins Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            body: """
+            <h2>🎉 Jenkins 빌드 성공 🎉</h2>
+            <p>🔹 프로젝트: ${env.JOB_NAME}</p>
+            <p>🔹 빌드 번호: ${env.BUILD_NUMBER}</p>
+            <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
+            """,
+            to: "${env.RECIPIENTS}",
+            mimeType: "text/html",
+            replyTo: "${env.SMTP_USER}",
+            from: "${env.SMTP_USER}",
+            username: "${env.SMTP_USER}",
+            password: "${env.SMTP_PASSWORD}"
+        )
     }
 }
