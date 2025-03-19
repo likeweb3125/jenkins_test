@@ -87,7 +87,7 @@ def sendMailOnFailure(errorMessage) {
     }
 }
 
-// 📌 빌드 성공 시 이메일 전송 함수
+// 📌 빌드 성공 시 이메일 전송 a
 def sendMailOnSuccess() {
     withCredentials([usernamePassword(credentialsId: 'mailgun_smtp', usernameVariable: 'SMTP_USER', passwordVariable: 'SMTP_PASSWORD')]) {
         echo "SMTP_USER: ${env.SMTP_USER}"
