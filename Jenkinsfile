@@ -97,7 +97,7 @@ def sendMailOnSuccess() {
                 to: "crazin@likeweb.co.kr",
                 mimeType: "text/html",
                 replyTo: "jenkins@mg.likeweb.co.kr",
-                from: "jenkins@mg.likeweb.co.kr"
+                from: "jenkins@mg.likeweb.co.kr",
                 username: "${env.SMTP_USER}",
                 password: "${SMTP_PASSWORD}"
             )
