@@ -75,7 +75,7 @@ def sendMailOnFailure(errorMessage) {
         <p>🔹 실패 단계: ${errorMessage}</p>
         <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
         """,
-        to: env.RECIPIENTS  // ✅ environment 블록에서 선언한 변수 사용
+        to: env.RECIPIENTS.split(',') 
     )
 }
 
@@ -90,6 +90,6 @@ def sendMailOnSuccess() {
         <p>🚀 애플리케이션이 성공적으로 배포되었습니다!</p>
         <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
         """,
-        to: env.RECIPIENTS  // ✅ environment 블록에서 선언한 변수 사용
+       to: env.RECIPIENTS.split(',') 
     )
 }
