@@ -8,7 +8,7 @@ pipeline {
         IMAGE_NAME = 'jenkins_test_image'
         HOST_PORT = '3010'  // 변경된 호스트 포트
         CONTAINER_PORT = '3000'  // 컨테이너 내부 포트
-        RECIPIENTS = 'crazin@likeweb.co.kr,ohsjwe@likeweb.co.kr'  // ✅ 추가
+        RECIPIENTS = 'crazin@likeweb.co.kr'  // ✅ 추가
     }
 
     stages {
@@ -75,7 +75,7 @@ def sendMailOnFailure(errorMessage) {
         <p>🔹 실패 단계: ${errorMessage}</p>
         <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
         """,
-        to: env.RECIPIENTS.split(',') 
+        to: env.RECIPIENTS
     )
 }
 
@@ -90,6 +90,5 @@ def sendMailOnSuccess() {
         <p>🚀 애플리케이션이 성공적으로 배포되었습니다!</p>
         <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
         """,
-       to: env.RECIPIENTS.split(',') 
-    )
+       to: env.RECIPIENTS
 }
