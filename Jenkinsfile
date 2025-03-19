@@ -63,6 +63,8 @@ pipeline {
     }
 }
 
+def recipients = ['crazin@likeweb.co.kr', 'ohsjwe@likeweb.co.kr']
+
 // 📌 빌드 실패 시 이메일 전송 함수
 def sendMailOnFailure(errorMessage) {
     emailext (
@@ -74,7 +76,7 @@ def sendMailOnFailure(errorMessage) {
         <p>🔹 실패 단계: ${errorMessage}</p>
         <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
         """,
-        to: ['crazin@likeweb.co.kr', 'ohsjwe@likeweb.co.kr']
+        to: recipients.join(",") 
     )
 }
 
@@ -89,6 +91,6 @@ def sendMailOnSuccess() {
         <p>🚀 애플리케이션이 성공적으로 배포되었습니다!</p>
         <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
         """,
-        to: ['crazin@likeweb.co.kr', 'ohsjwe@likeweb.co.kr']
+        to: recipients.join(",") 
     )
 }
