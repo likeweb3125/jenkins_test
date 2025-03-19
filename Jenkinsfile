@@ -79,7 +79,7 @@ def sendMailOnFailure(errorMessage) {
     )
 }
 
-// 📌 빌드 성공 시 이메일 전송 함수ㅁ
+// 📌 빌드 성공 시 이메일 전송 함수
 def sendMailOnSuccess() {
     emailext (
         subject: "✅ Jenkins Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
