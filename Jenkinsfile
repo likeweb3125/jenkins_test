@@ -67,7 +67,7 @@ pipeline {
 // 📌 빌드 실패 시 이메일 전송 함수
 def sendMailOnFailure(errorMessage) {
         emailext (
-            subject: "🔴 Jenkins Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            subject: "🔴 빌드 실패: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
             body: """
             <h2>❌ Jenkins 빌드 실패 ❌</h2>
             <p>🔹 프로젝트: ${env.JOB_NAME}</p>
@@ -76,13 +76,14 @@ def sendMailOnFailure(errorMessage) {
             <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
             """,
             to: "${env.RECIPIENTS}",
+            from: "jenkins@mg.likeweb.co.kr"
         )
 }
 
 // 📌 빌드 성공 시 이메일 전송 a
 def sendMailOnSuccess() {
         emailext(
-            subject: "✅ Jenkins Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+            subject: "✅ 빌드 성공: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
             body: """
             <h2>🎉 Jenkins 빌드 성공 🎉</h2>
             <p>🔹 프로젝트: ${env.JOB_NAME}</p>
@@ -90,5 +91,6 @@ def sendMailOnSuccess() {
             <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
             """,
             to: "${env.RECIPIENTS}",
+            from: "jenkins@mg.likeweb.co.kr"
         )
 }
