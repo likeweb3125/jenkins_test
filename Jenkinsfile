@@ -75,21 +75,26 @@ def sendMailOnFailure(errorMessage) {
         <p>🔹 실패 단계: ${errorMessage}</p>
         <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
         """,
-        to: env.RECIPIENTS
+                to: "crazin@likeweb.co.kr",
+                mimeType: "text/html",
+                replyTo: "jenkins@mg.likeweb.co.kr",
+                from: "jenkins@mg.likeweb.co.kr"
     )
 }
 
 // 📌 빌드 성공 시 이메일 전송 함수ㅁ
 def sendMailOnSuccess() {
-    emailext (
-        subject: "✅ Jenkins Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
-        body: """
-        <h2>🎉 Jenkins 빌드 성공 🎉</h2>
-        <p>🔹 프로젝트: ${env.JOB_NAME}</p>
-        <p>🔹 빌드 번호: ${env.BUILD_NUMBER}</p>
-        <p>🚀 애플리케이션이 성공적으로 배포되었습니다!</p>
-        <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
-        """,
-       to: env.RECIPIENTS
-    )
+    emailext(
+                subject: "✅ Jenkins Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+                body: """
+                <h2>🎉 Jenkins 빌드 성공 🎉</h2>
+                <p>🔹 프로젝트: ${env.JOB_NAME}</p>
+                <p>🔹 빌드 번호: ${env.BUILD_NUMBER}</p>
+                <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
+                """,
+                to: "crazin@likeweb.co.kr",
+                mimeType: "text/html",
+                replyTo: "jenkins@mg.likeweb.co.kr",
+                from: "jenkins@mg.likeweb.co.kr"
+            )
 }
