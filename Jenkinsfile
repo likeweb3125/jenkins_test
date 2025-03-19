@@ -8,7 +8,7 @@ pipeline {
         IMAGE_NAME = 'jenkins_test_image'
         HOST_PORT = '3010'
         CONTAINER_PORT = '3000'
-        RECIPIENTS = 'crazin@likeweb.co.kr'
+        RECIPIENTS = 'crazin@likeweb.co.kr,ohsjwe@likeweb.co.kr'
     }
 
     stages {
@@ -76,7 +76,6 @@ def sendMailOnFailure(errorMessage) {
             <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
             """,
             to: "${env.RECIPIENTS}",
-            mimeType: "text/html",
         )
 }
 
@@ -91,6 +90,5 @@ def sendMailOnSuccess() {
             <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
             """,
             to: "${env.RECIPIENTS}",
-            mimeType: "text/html",
         )
 }
