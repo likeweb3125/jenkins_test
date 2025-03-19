@@ -8,7 +8,7 @@ pipeline {
         IMAGE_NAME = 'jenkins_test_image'
         HOST_PORT = '3010'
         CONTAINER_PORT = '3000'
-        RECIPIENTS = 'crazin@likeweb.co.kr,ohsjwe@likeweb.co.kr'
+        RECIPIENTS = 'crazin@likeweb.co.kr'
     }
 
     stages {
@@ -25,7 +25,9 @@ pipeline {
                             git reset --hard origin/main
                             git pull origin main
                         fi
-                        """
+                        """ 
+                        // Git 커밋 메시지 가져오기
+                        env.GIT_COMMIT_MESSAGE = sh(script: "cd ${APP_DIR} && git log -1 --pretty=%B", returnStdout: true).trim()
                     } catch (Exception e) {
                         sendMailOnFailure("Update Repository Stage Failed")
                         error("Git 업데이트 실패!")
@@ -73,6 +75,7 @@ def sendMailOnFailure(errorMessage) {
             <p>🔹 프로젝트: ${env.JOB_NAME}</p>
             <p>🔹 빌드 번호: ${env.BUILD_NUMBER}</p>
             <p>🔹 실패 단계: ${errorMessage}</p>
+            <p>🔹 커밋 메시지: ${env.GIT_COMMIT_MESSAGE}</p>
             <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
             """,
             to: "${env.RECIPIENTS}",
@@ -88,6 +91,7 @@ def sendMailOnSuccess() {
             <h2>🎉 Jenkins 빌드 성공 🎉</h2>
             <p>🔹 프로젝트: ${env.JOB_NAME}</p>
             <p>🔹 빌드 번호: ${env.BUILD_NUMBER}</p>
+            <p>🔹 커밋 메시지: ${env.GIT_COMMIT_MESSAGE}</p>
             <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
             """,
             to: "${env.RECIPIENTS}",
