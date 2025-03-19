@@ -9,6 +9,7 @@ pipeline {
         HOST_PORT = '3010'  // 변경된 호스트 포트
         CONTAINER_PORT = '3000'  // 컨테이너 내부 포트
         RECIPIENTS = 'crazin@likeweb.co.kr'  // ✅ 추가
+        SMTP_USER = 'jenkins@mg.likeweb.co.kr'
     }
 
     stages {
@@ -84,6 +85,7 @@ def sendMailOnFailure(errorMessage) {
 
 // 📌 빌드 성공 시 이메일 전송 함수a
 def sendMailOnSuccess() {
+    withCredentials([string(credentialsId: 'mailgun', variable: 'SMTP_PASSWORD')]) {
     emailext(
                 subject: "✅ Jenkins Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
                 body: """
@@ -96,5 +98,8 @@ def sendMailOnSuccess() {
                 mimeType: "text/html",
                 replyTo: "jenkins@mg.likeweb.co.kr",
                 from: "jenkins@mg.likeweb.co.kr"
+                username: "${env.SMTP_USER}",
+                password: "${SMTP_PASSWORD}"
             )
+    }
 }
