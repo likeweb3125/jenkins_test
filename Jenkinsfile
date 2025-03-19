@@ -66,8 +66,6 @@ pipeline {
 
 // 📌 빌드 실패 시 이메일 전송 함수
 def sendMailOnFailure(errorMessage) {
-    withCredentials([usernamePassword(credentialsId: 'mailgun_smtp', usernameVariable: 'SMTP_USER', passwordVariable: 'SMTP_PASSWORD')]) {
-        echo "SMTP_USER: ${env.SMTP_USER}"  // ✅ ID가 정상적으로 로드되는지 확인
         emailext (
             subject: "🔴 Jenkins Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
             body: """
@@ -79,18 +77,11 @@ def sendMailOnFailure(errorMessage) {
             """,
             to: "${env.RECIPIENTS}",
             mimeType: "text/html",
-            replyTo: "${env.SMTP_USER}",
-            from: "${env.SMTP_USER}",
-            username: "${env.SMTP_USER}",  // ✅ 올바르게 불러오기
-            password: "${env.SMTP_PASSWORD}"  // ✅ 올바르게 불러오기
         )
-    }
 }
 
 // 📌 빌드 성공 시 이메일 전송 a
 def sendMailOnSuccess() {
-    withCredentials([usernamePassword(credentialsId: 'mailgun_smtp', usernameVariable: 'SMTP_USER', passwordVariable: 'SMTP_PASSWORD')]) {
-        echo "SMTP_USER: ${env.SMTP_USER}"
         emailext(
             subject: "✅ Jenkins Build Success: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
             body: """
@@ -101,10 +92,5 @@ def sendMailOnSuccess() {
             """,
             to: "${env.RECIPIENTS}",
             mimeType: "text/html",
-            replyTo: "${env.SMTP_USER}",
-            from: "${env.SMTP_USER}",
-            username: "${env.SMTP_USER}",
-            password: "${env.SMTP_PASSWORD}"
         )
-    }
 }
