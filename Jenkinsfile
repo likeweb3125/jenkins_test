@@ -27,7 +27,12 @@ pipeline {
                         fi
                         """ 
                         // Git 커밋 메시지 가져오기
-                        env.GIT_COMMIT_MESSAGE = sh(script: "cd ${APP_DIR} && git log -1 --pretty=%B", returnStdout: true).trim()
+                        def gitInfo = sh(script: "cd ${APP_DIR} && git log -1 --pretty='format:%an|%B|%ci'", returnStdout: true).trim()
+                        env.GIT_COMMIT_AUTHOR = gitInfo.split("\\|")[0]  // 커밋한 유저명
+                        env.GIT_COMMIT_MESSAGE = gitInfo.split("\\|")[1]  // 커밋 메시지
+                        env.GIT_COMMIT_TIME = gitInfo.split("\\|")[2]  // 커밋 시간
+
+
                     } catch (Exception e) {
                         sendMailOnFailure("Update Repository Stage Failed")
                         error("Git 업데이트 실패!")
@@ -75,7 +80,9 @@ def sendMailOnFailure(errorMessage) {
             <p>🔹 프로젝트: ${env.JOB_NAME}</p>
             <p>🔹 빌드 번호: ${env.BUILD_NUMBER}</p>
             <p>🔹 실패 단계: ${errorMessage}</p>
+            <p>🔹 커밋 유저: ${env.GIT_COMMIT_AUTHOR}</p>
             <p>🔹 커밋 메시지: ${env.GIT_COMMIT_MESSAGE}</p>
+            <p>🔹 커밋 시간: ${env.GIT_COMMIT_TIME}</p>
             <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
             """,
             to: "${env.RECIPIENTS}",
@@ -91,7 +98,9 @@ def sendMailOnSuccess() {
             <h2>🎉 Jenkins 빌드 성공 🎉</h2>
             <p>🔹 프로젝트: ${env.JOB_NAME}</p>
             <p>🔹 빌드 번호: ${env.BUILD_NUMBER}</p>
+            <p>🔹 커밋 유저: ${env.GIT_COMMIT_AUTHOR}</p>
             <p>🔹 커밋 메시지: ${env.GIT_COMMIT_MESSAGE}</p>
+            <p>🔹 커밋 시간: ${env.GIT_COMMIT_TIME}</p>
             <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
             """,
             to: "${env.RECIPIENTS}",
