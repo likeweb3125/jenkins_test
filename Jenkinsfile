@@ -64,7 +64,7 @@ pipeline {
     }
 }
 
-// 📌 빌드 실패 시 이메일 전송 함수
+// 📌 빌드 실패 시 이메일 전송 함수1
 def sendMailOnFailure(errorMessage) {
     emailext (
         subject: "🔴 Jenkins Build Failed: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
