@@ -86,7 +86,7 @@ def sendMailOnFailure(errorMessage) {
             <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
             """,
             to: "${env.RECIPIENTS}",
-            from: "jenkins@mg.likeweb.co.kr"
+            from: "no-reply@likeweb.co.kr"
         )
 }
 
@@ -104,6 +104,6 @@ def sendMailOnSuccess() {
             <p>📜 <a href='${env.BUILD_URL}console'>콘솔 로그 확인</a></p>
             """,
             to: "${env.RECIPIENTS}",
-            from: "jenkins@mg.likeweb.co.kr"
+            from: "no-reply@likeweb.co.kr"
         )
 }
