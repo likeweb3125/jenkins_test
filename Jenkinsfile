@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent { label 'build-agent' } 
 
     environment {
         GIT_REPO = 'git@github.com:likeweb3125/jenkins_test.git'
