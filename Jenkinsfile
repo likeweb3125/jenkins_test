@@ -17,6 +17,7 @@ pipeline {
                 script {
                     try {
                         sh """
+                        git config --global --add safe.directory ${APP_DIR}  // 안전한 디렉토리 등록
                         if [ ! -d "${APP_DIR}/.git" ]; then
                             git clone ${GIT_REPO} ${APP_DIR}
                         else
