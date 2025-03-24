@@ -17,7 +17,6 @@ pipeline {
                 script {
                     try {
                         sh """
-                        git config --global --add safe.directory ${APP_DIR}
                         if [ ! -d "${APP_DIR}/.git" ]; then
                             git clone ${GIT_REPO} ${APP_DIR}
                         else
@@ -31,7 +30,7 @@ pipeline {
                         def gitInfo = sh(script: "cd ${APP_DIR} && git log -1 --pretty='format:%an|%B|%ci'", returnStdout: true).trim()
                         env.GIT_COMMIT_AUTHOR = gitInfo.split("\\|")[0]  // 커밋한 유저명
                         env.GIT_COMMIT_MESSAGE = gitInfo.split("\\|")[1]  // 커밋 메시지
-                        env.GIT_COMMIT_TIME = gitInfo.split("\\|")[2]  // 커밋 시간
+                        env.GIT_COMMIT_TIME = gitInfo.split("\\|")[2]  // 커밋 시간 ㅅㄷㄴㅅ
 
 
                     } catch (Exception e) {
