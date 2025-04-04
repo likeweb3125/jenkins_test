@@ -32,7 +32,7 @@ pipeline {
 
                         // Git 정보 추출
                         dir(APP_DIR) {
-                            // 브랜치명 (origin/ 제거)
+                            // 브랜치명 (origin/ 제거)1
                             env.GIT_BRANCH = sh(
                                 script: "git rev-parse --abbrev-ref HEAD | sed 's|^origin/||'",
                                 returnStdout: true
