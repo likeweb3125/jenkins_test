@@ -24,6 +24,7 @@ pipeline {
                             git fetch origin main
                             git reset --hard origin/main
                             git pull origin main
+                            
                         fi
                         """ 
                         // Git 커밋 메시지 가져오기ㅁ
@@ -32,14 +33,12 @@ pipeline {
                         env.GIT_COMMIT_MESSAGE = gitInfo.split("\\|")[1]  // 커밋 메시지
                         env.GIT_COMMIT_TIME = gitInfo.split("\\|")[2]  // 커밋 시간 ㅅㄷㄴㅅ
 
-                            // 브랜치명 추출// 🔧 브랜치명에서 origin/ 제거
-                            env.GIT_BRANCH = sh(
-                                script: "git rev-parse --abbrev-ref HEAD | sed 's|^origin/||'",
-                                returnStdout: true
-                            ).trim()
-                            echo "🔍 현재 브랜치: ${env.GIT_BRANCH}"
-
-
+                        env.GIT_BRANCH = sh(
+                            script: "git rev-parse --abbrev-ref HEAD | sed 's|^origin/||'",
+                            returnStdout: true
+                        ).trim()
+                        echo "🔍 현재 브랜치: ${env.GIT_BRANCH}"
+                        
                     } catch (Exception e) {
                         sendMailOnFailure("Update Repository Stage Failed")
                         error("Git 업데이트 실패!")
