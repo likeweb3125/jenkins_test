@@ -59,6 +59,14 @@ pipeline {
                     }
                 }
             }
+            when {
+                expression { env.BRANCH_NAME == 'origin/main' }
+                    echo "현재 main"
+            }
+            when {
+                expression { env.BRANCH_NAME == 'origin/develop' }
+                    echo "현재 develop"
+            }
         }
 
         stage('Build & Restart Docker') {
