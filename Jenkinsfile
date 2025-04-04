@@ -12,14 +12,17 @@ pipeline {
     }
 
     stages {
-        stage('Update Repository') {
+        stage('Clone or Update Repository') {
             steps {
                 script {
                     try {
+                        // Git clone 또는 pull
                         sh """
                         if [ ! -d "${APP_DIR}/.git" ]; then
+                            echo "📥 Git 저장소가 없으므로 clone합니다."
                             git clone ${GIT_REPO} ${APP_DIR}
                         else
+                            echo "🔄 Git 저장소가 이미 존재하므로 pull 진행"
                             cd ${APP_DIR}
                             git fetch origin main
                             git reset --hard origin/main
@@ -27,41 +30,57 @@ pipeline {
                         fi
                         """
 
-                        // 브랜치명 추출 (origin/ 접두어 제거)
-                        env.GIT_BRANCH = sh(
-                            script: "cd ${APP_DIR} && git rev-parse --abbrev-ref HEAD | sed 's|^origin/||'",
-                            returnStdout: true
-                        ).trim()
+                        // Git 정보 추출
+                        dir(APP_DIR) {
+                            // 브랜치명 (origin/ 제거)
+                            env.GIT_BRANCH = sh(
+                                script: "git rev-parse --abbrev-ref HEAD | sed 's|^origin/||'",
+                                returnStdout: true
+                            ).trim()
 
-                        // Git 커밋 정보 추출
-                        def gitInfo = sh(script: "cd ${APP_DIR} && git log -1 --pretty='format:%an|%B|%ci'", returnStdout: true).trim()
-                        env.GIT_COMMIT_AUTHOR = gitInfo.split("\\|")[0]
-                        env.GIT_COMMIT_MESSAGE = gitInfo.split("\\|")[1]
-                        env.GIT_COMMIT_TIME = gitInfo.split("\\|")[2]
+                            def gitInfo = sh(
+                                script: "git log -1 --pretty='format:%an|%B|%ci'",
+                                returnStdout: true
+                            ).trim()
 
-                        echo "🔍 현재 브랜치: ${env.GIT_BRANCH}"
+                            env.GIT_COMMIT_AUTHOR = gitInfo.split("\\|")[0]
+                            env.GIT_COMMIT_MESSAGE = gitInfo.split("\\|")[1]
+                            env.GIT_COMMIT_TIME = gitInfo.split("\\|")[2]
+
+                            echo "✅ 브랜치명: ${env.GIT_BRANCH}"
+                            echo "✅ 커밋 작성자: ${env.GIT_COMMIT_AUTHOR}"
+                            echo "✅ 커밋 메시지: ${env.GIT_COMMIT_MESSAGE}"
+                            echo "✅ 커밋 시간: ${env.GIT_COMMIT_TIME}"
+                        }
+
                     } catch (Exception e) {
-                        sendMailOnFailure("Update Repository Stage Failed")
-                        error("Git 업데이트 실패!")
+                        sendMailOnFailure("❌ Git clone 또는 업데이트 실패")
+                        error("❌ Git 작업 실패")
                     }
                 }
             }
         }
 
-        stage('Build & Restart Docker Container') {
+        stage('Build & Restart Docker') {
             steps {
                 script {
                     try {
-                        sh """
-                        cd ${APP_DIR}
-                        docker build --no-cache -t ${IMAGE_NAME} .
-                        docker stop ${CONTAINER_NAME} || true
-                        docker rm ${CONTAINER_NAME} || true
-                        docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}
-                        """
+                        dir(APP_DIR) {
+                            sh """
+                            echo "🐳 Docker 이미지 빌드 시작"
+                            docker build --no-cache -t ${IMAGE_NAME} .
+
+                            echo "🛑 기존 컨테이너 중지 및 제거"
+                            docker stop ${CONTAINER_NAME} || true
+                            docker rm ${CONTAINER_NAME} || true
+
+                            echo "🚀 새 컨테이너 실행"
+                            docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}
+                            """
+                        }
                     } catch (Exception e) {
-                        sendMailOnFailure("Docker Build & Restart Failed")
-                        error("Docker 빌드 및 실행 실패!")
+                        sendMailOnFailure("❌ Docker Build or Run Failed")
+                        error("❌ Docker 빌드/실행 실패")
                     }
                 }
             }
@@ -73,12 +92,13 @@ pipeline {
             sendMailOnSuccess()
         }
         failure {
-            sendMailOnFailure("Pipeline Execution Failed")
+            sendMailOnFailure("❌ Pipeline 실패 (Post 단계)")
         }
     }
 }
 
-// 📌 빌드 실패 시 이메일 전송 함수
+
+// 빌드 실패 시 이메일
 def sendMailOnFailure(errorMessage) {
     emailext (
         subject: "🔴 빌드 실패: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
@@ -98,7 +118,7 @@ def sendMailOnFailure(errorMessage) {
     )
 }
 
-// 📌 빌드 성공 시 이메일 전송 함수
+// 빌드 성공 시 이메일
 def sendMailOnSuccess() {
     emailext(
         subject: "✅ 빌드 성공: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
@@ -116,3 +136,4 @@ def sendMailOnSuccess() {
         from: "no-reply@likeweb.co.kr"
     )
 }
+
