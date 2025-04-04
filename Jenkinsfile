@@ -59,6 +59,9 @@ pipeline {
                     }
                 }
             }
+        }
+
+        stage('Build & Restart Docker') {
             when {
                 expression { env.GIT_BRANCH == 'origin/main' }
             }
@@ -70,31 +73,6 @@ pipeline {
             }
             steps {
                     echo "현재 develop"
-            }
-        }
-
-        stage('Build & Restart Docker') {
-            steps {
-                script {
-                    try {
-                        dir(APP_DIR) {
-                            sh """
-                            echo "🐳 Docker 이미지 빌드 시작"
-                            docker build --no-cache -t ${IMAGE_NAME} .
-
-                            echo "🛑 기존 컨테이너 중지 및 제거"
-                            docker stop ${CONTAINER_NAME} || true
-                            docker rm ${CONTAINER_NAME} || true
-
-                            echo "🚀 새 컨테이너 실행"
-                            docker run -d --name ${CONTAINER_NAME} -p ${HOST_PORT}:${CONTAINER_PORT} ${IMAGE_NAME}
-                            """
-                        }
-                    } catch (Exception e) {
-                        sendMailOnFailure("❌ Docker Build or Run Failed")
-                        error("❌ Docker 빌드/실행 실패")
-                    }
-                }
             }
         }
     }
