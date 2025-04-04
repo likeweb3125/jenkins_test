@@ -61,10 +61,14 @@ pipeline {
             }
             when {
                 expression { env.GIT_BRANCH == 'origin/main' }
+            }
+            steps {
                     echo "현재 main"
             }
             when {
                 expression { env.GIT_BRANCH == 'origin/develop' }
+            }
+            steps {
                     echo "현재 develop"
             }
         }
