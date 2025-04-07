@@ -40,15 +40,8 @@ pipeline {
 
                             echo "📦 원본 브랜치명: ${env.GIT_BRANCH}"
 
-                            def strippedBranch = env.GIT_BRANCH.replaceFirst(/^origin\//, '')
-                            echo "📦 접두어 제거된 브랜치명: ${strippedBranch}"
-
-                            // 조건 체크는 제거된 값으로
-                            if (strippedBranch == 'main') {
-                                echo "📌 값은 main입니다!"
-                            } else {
-                                echo "📌 값은 main이 아닙니다!"
-                            }
+                            env.GIT_BRANCHSTRIP = env.GIT_BRANCH.replaceFirst(/^origin\//, '')
+                            echo "📦 접두어 제거된 브랜치명: ${env.GIT_BRANCHSTRIP}"
 
 
                             def gitInfo = sh(
@@ -75,6 +68,10 @@ pipeline {
         }
 
         stage('Build & Restart Docker') {
+
+            when {
+                expression { env.GIT_BRANCHSTRIP == 'main' }
+            }
             steps {
                 script {
                     try {
