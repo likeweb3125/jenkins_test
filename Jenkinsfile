@@ -34,9 +34,22 @@ pipeline {
                         dir(APP_DIR) {
                             // 브랜치명 (origin/ 제거)1
                             env.GIT_BRANCH = sh(
-                                script: "git rev-parse --abbrev-ref HEAD | sed 's|^origin/||'",
+                                script: "git rev-parse --abbrev-ref HEAD",
                                 returnStdout: true
                             ).trim()
+
+                            echo "📦 원본 브랜치명: ${env.GIT_BRANCH}"
+
+                            def strippedBranch = env.GIT_BRANCH.replaceFirst(/^origin\//, '')
+                            echo "📦 접두어 제거된 브랜치명: ${strippedBranch}"
+
+                            // 조건 체크는 제거된 값으로
+                            if (strippedBranch == 'main') {
+                                echo "📌 값은 main입니다!"
+                            } else {
+                                echo "📌 값은 main이 아닙니다!"
+                            }
+
 
                             def gitInfo = sh(
                                 script: "git log -1 --pretty='format:%an|%B|%ci'",
